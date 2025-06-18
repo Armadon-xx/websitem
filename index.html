@@ -94,13 +94,6 @@
         .active-content {
             display: block;
         }
-        .server-status {
-            color: red;
-            font-weight: bold;
-        }
-        .server-status.online {
-            color: green;
-        }
         .no-announcement {
             font-style: italic;
             color: #666;
@@ -298,11 +291,16 @@
                 <span>CS2 Sunucuları</span>
             </div>
             <div id="serverList">
-                <div class="server-box" onclick="connectToServer('185.193.165.39')">
+                <div class="server-box" onclick="connectToServer('steam://connect/185.193.165.39')">
                     <div class="server-name">Nexus Klan</div>
                     <div>
                         <span class="server-ip">185.193.165.39</span>
-                        <span class="server-status online">Durumu: Açık</span>
+                    </div>
+                </div>
+                <div class="server-box" onclick="connectToServer('steam://connect/185.193.165.6')">
+                    <div class="server-name">Teke Fun</div>
+                    <div>
+                        <span class="server-ip">185.193.165.6</span>
                     </div>
                 </div>
             </div>
@@ -337,6 +335,7 @@
                 <div class="help-option" onclick="sendHelpMessage('1')">!1 Pluginler Hakkında sorular</div>
                 <div class="help-option" onclick="sendHelpMessage('2')">!2 Pluginde Çıkan hatalar</div>
                 <div class="help-option" onclick="sendHelpMessage('3')">!3 Plugin fiyatları</div>
+                <div class="help-option" onclick="sendHelpMessage('4')">!4 Pluginlerin listesi</div>
             </div>
         </div>
         <input type="text" class="chat-input" id="chatInput" placeholder="Mesajınızı yazın..." onkeypress="handleChatInput(event)">
@@ -375,9 +374,8 @@
             desc.style.display = desc.style.display === 'block' ? 'none' : 'block';
         }
 
-        function connectToServer(ip) {
-            alert(ip + " adresli sunucuya bağlanılıyor...");
-            // Burada gerçek bağlantı kodları olacak
+        function connectToServer(connectString) {
+            window.location.href = connectString;
         }
 
         function toggleChat() {
@@ -387,14 +385,28 @@
 
         function sendHelpMessage(option) {
             const messages = document.getElementById('chatMessages');
-            const options = {
-                '1': 'Pluginler Hakkında sorular',
-                '2': 'Pluginde Çıkan hatalar',
-                '3': 'Plugin fiyatları'
-            };
             
-            messages.innerHTML += `<div>Kullanıcı: !${option} ${options[option]}</div>`;
-            messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
+            if (option === '1') {
+                messages.innerHTML += `<div>Kullanıcı: !${option} Pluginler Hakkında sorular</div>`;
+                messages.innerHTML += '<div>Bot: Ana Sayfada Pluginler katagorisinden istediğiniz plugin üstüne tıklayın orada amacı yazıyor ordan bakabilirsiniz ☺️</div>';
+            } else if (option === '2') {
+                messages.innerHTML += `<div>Kullanıcı: !${option} Pluginde Çıkan hatalar</div>`;
+                messages.innerHTML += '<div>Bot: Plugininizde çıkan hatadan dolayı çok üzügünüz. Bunu çözmesi için ersin.q adlı kullanıcıya yazın discord üzerinden yada Ana Sayfada Discord Adresleri kısmından Discord Sunucu Aderesimiz\'e tıklayın ordan ticket oluşturun size en kısa sürede döneceklerdir. Tekrardan Özür Dileriz</div>';
+            } else if (option === '3') {
+                messages.innerHTML += `<div>Kullanıcı: !${option} Plugin fiyatları</div>`;
+                messages.innerHTML += '<div>Bot: Plugin fiyatları:</div>';
+                messages.innerHTML += '<div>!1 🗺️ Map Plugini - Fiyatı 80 TL</div>';
+                messages.innerHTML += '<div>!2 🏆Topka - Fiyatı 170 TL</div>';
+                messages.innerHTML += '<div>!3 📏 Kaccm - Fiyatı 50 TL (Toplu Alışverişlerde BEDAVA)</div>';
+                messages.innerHTML += '<div>!4 ⚠️Sikayet - Fiyatı 350 TL</div>';
+            } else if (option === '4') {
+                messages.innerHTML += `<div>Kullanıcı: !${option} Pluginlerin listesi</div>`;
+                messages.innerHTML += '<div>Bot: Pluginlerimiz:</div>';
+                messages.innerHTML += '<div>!1 🗺️ Map Plugini</div>';
+                messages.innerHTML += '<div>!2 🏆Topka</div>';
+                messages.innerHTML += '<div>!3 📏 Kaccm</div>';
+                messages.innerHTML += '<div>!4 ⚠️Sikayet</div>';
+            }
             
             // Scroll to bottom
             messages.scrollTop = messages.scrollHeight;
@@ -406,21 +418,37 @@
                 const messages = document.getElementById('chatMessages');
                 
                 if (input.value.trim() !== '') {
-                    messages.innerHTML += `<div>Kullanıcı: ${input.value}</div>`;
+                    const userMessage = input.value.trim();
+                    messages.innerHTML += `<div>Kullanıcı: ${userMessage}</div>`;
                     
                     // Özel yanıtlar
-                    if (input.value.toLowerCase().includes('sa') || input.value.toLowerCase().includes('selam')) {
-                        messages.innerHTML += '<div>Bot: Aleyküm Selam, size hangi konuda yardımcı olabilirim?</div>';
-                    } else if (input.value.toLowerCase().includes('para iadesi')) {
+                    if (userMessage.toLowerCase().includes('merhaba') || 
+                        userMessage.toLowerCase().includes('selam') || 
+                        userMessage.toLowerCase().includes('sa')) {
+                        
+                        if (userMessage.toLowerCase().includes('kanka')) {
+                            messages.innerHTML += '<div>Bot: Ooo Kanka merhaba, sana nasıl yardımcı olabilirim?</div>';
+                        } else {
+                            messages.innerHTML += '<div>Bot: Merhabalar, size nasıl yardımcı olabilirim?</div>';
+                        }
+                    } 
+                    else if (userMessage.toLowerCase().includes('para iadesi')) {
                         messages.innerHTML += '<div>Bot: Para iadesi yapılmıyor ama bir sorununuz varsa sizle daha detaylı ilgilenecek kişilerin discord adları:<br>Sadistic666<br>ersin.q</div>';
-                    } else if (input.value.startsWith('!1')) {
-                        messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
-                    } else if (input.value.startsWith('!2')) {
-                        messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
-                    } else if (input.value.startsWith('!3')) {
-                        messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
-                    } else {
-                        messages.innerHTML += '<div>Bot: Lütfen geçerli bir seçenek girin (!1, !2, !3)</div>';
+                    } 
+                    else if (userMessage.startsWith('!1')) {
+                        messages.innerHTML += '<div>Bot: 🗺️ Map Plugini - Fiyatı 80 TL</div>';
+                    } 
+                    else if (userMessage.startsWith('!2')) {
+                        messages.innerHTML += '<div>Bot: 🏆Topka - Fiyatı 170 TL</div>';
+                    } 
+                    else if (userMessage.startsWith('!3')) {
+                        messages.innerHTML += '<div>Bot: 📏 Kaccm - Fiyatı 50 TL (Toplu Alışverişlerde BEDAVA)</div>';
+                    } 
+                    else if (userMessage.startsWith('!4')) {
+                        messages.innerHTML += '<div>Bot: ⚠️Sikayet - Fiyatı 350 TL</div>';
+                    } 
+                    else {
+                        messages.innerHTML += '<div>Bot: Lütfen geçerli bir seçenek girin (!1, !2, !3, !4)</div>';
                     }
                     
                     input.value = '';
