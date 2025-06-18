@@ -1,1 +1,447 @@
-<h1>Site Yakında Yayında!</h1>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armadon Plugin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            padding: 10px 0;
+        }
+        .navbar a {
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #555;
+        }
+        .active {
+            background-color: #4CAF50;
+        }
+        .container {
+            padding: 20px;
+        }
+        .section-title {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .section-title:before, .section-title:after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ccc;
+            margin: auto;
+        }
+        .section-title span {
+            padding: 0 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        .plugin-box {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .plugin-box:hover {
+            transform: translateY(-3px);
+        }
+        .plugin-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 0;
+            margin-left: 30px;
+        }
+        .plugin-emoji {
+            position: absolute;
+            left: 15px;
+            font-size: 20px;
+        }
+        .content-section {
+            display: none;
+        }
+        .active-content {
+            display: block;
+        }
+        .server-status {
+            color: red;
+            font-weight: bold;
+        }
+        .server-status.online {
+            color: green;
+        }
+        .no-announcement {
+            font-style: italic;
+            color: #666;
+        }
+        .server-box {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .server-name {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .server-ip {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 3px 5px;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+        .discord-box {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #7289DA;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .discord-box:hover {
+            background-color: #f8f8f8;
+        }
+        .discord-icon {
+            margin-right: 10px;
+            color: #7289DA;
+            font-size: 20px;
+        }
+        .support-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .support-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .chat-box {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            padding: 15px;
+            z-index: 100;
+        }
+        .chat-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .chat-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .help-options {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        .help-option {
+            margin-bottom: 5px;
+            cursor: pointer;
+            color: #4CAF50;
+        }
+        .help-option:hover {
+            text-decoration: underline;
+        }
+        .announcement-box {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .announcement-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .announcement-date {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        .announcement-content {
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#" class="active" onclick="showContent('home')">🏠 Ana Sayfa</a>
+        <a href="#" onclick="showContent('servers')">🔫CS2 Sunucuları🔫</a>
+        <a href="#" onclick="showContent('news')">📢Yenilikler & Duyurular</a>
+    </div>
+
+    <div class="container">
+        <div id="home" class="content-section active-content">
+            <div class="section-title">
+                <span>Pluginler</span>
+            </div>
+            
+            <div class="plugin-box" onclick="showPluginImage(1)">
+                <span class="plugin-emoji">🗺️</span>
+                <div class="plugin-title">Map Plugini</div>
+            </div>
+            <div class="plugin-box" onclick="showPluginImage(2)">
+                <span class="plugin-emoji">🏆</span>
+                <div class="plugin-title">Topka</div>
+            </div>
+            <div class="plugin-box" onclick="showPluginImage(3)">
+                <span class="plugin-emoji">📏</span>
+                <div class="plugin-title">Kaccm</div>
+            </div>
+            <div class="plugin-box" onclick="showPluginImage(4)">
+                <span class="plugin-emoji">⚠️</span>
+                <div class="plugin-title">Sikayet</div>
+            </div>
+            
+            <div class="section-title">
+                <span>Discord Adresleri</span>
+            </div>
+            
+            <a href="https://discord.gg/TQH3mMG58m" target="_blank" class="discord-box">
+                <i class="fab fa-discord discord-icon"></i>
+                Discord Sunucu Adresimiz
+            </a>
+        </div>
+
+        <div id="servers" class="content-section">
+            <div class="section-title">
+                <span>CS2 Sunucuları</span>
+            </div>
+            <div id="serverList">
+                <!-- Sunucu bilgileri buraya dinamik olarak yüklenecek -->
+                <div class="no-announcement">Sunucu bilgileri yükleniyor...</div>
+            </div>
+        </div>
+
+        <div id="news" class="content-section">
+            <div class="section-title">
+                <span>Duyurular</span>
+            </div>
+            <div id="announcementList">
+                <!-- Duyurular buraya dinamik olarak yüklenecek -->
+                <div class="no-announcement">Duyurular yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="support-btn" onclick="toggleChat()">
+        <i class="fas fa-headset"></i>
+    </div>
+
+    <div id="chatBox" class="chat-box">
+        <div class="chat-header">Destek Sistemi</div>
+        <div class="chat-messages" id="chatMessages">
+            <div>Bot: Merhaba! Size nasıl yardımcı olabilirim?</div>
+            <div>Bot: Aşağıdaki seçeneklerden birini seçebilirsiniz:</div>
+            <div class="help-options">
+                <div class="help-option" onclick="sendHelpMessage('1')">!1 Pluginler Hakkında sorular</div>
+                <div class="help-option" onclick="sendHelpMessage('2')">!2 Pluginde Çıkan hatalar</div>
+                <div class="help-option" onclick="sendHelpMessage('3')">!3 Plugin fiyatları</div>
+            </div>
+        </div>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Mesajınızı yazın..." onkeypress="handleChatInput(event)">
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde verileri çek
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServers();
+            loadAnnouncements();
+        });
+
+        function showContent(sectionId) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active-content');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.add('active-content');
+            
+            // Update active nav link
+            document.querySelectorAll('.navbar a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function showPluginImage(imageNumber) {
+            alert("Görsel " + imageNumber + " gösterilecek");
+        }
+
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.style.display = chatBox.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function sendHelpMessage(option) {
+            const messages = document.getElementById('chatMessages');
+            const options = {
+                '1': 'Pluginler Hakkında sorular',
+                '2': 'Pluginde Çıkan hatalar',
+                '3': 'Plugin fiyatları'
+            };
+            
+            messages.innerHTML += `<div>Kullanıcı: !${option} ${options[option]}</div>`;
+            messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
+            
+            // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('chatInput');
+                const messages = document.getElementById('chatMessages');
+                
+                if (input.value.trim() !== '') {
+                    messages.innerHTML += `<div>Kullanıcı: ${input.value}</div>`;
+                    
+                    if (input.value.startsWith('!1')) {
+                        messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
+                    } else if (input.value.startsWith('!2')) {
+                        messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
+                    } else if (input.value.startsWith('!3')) {
+                        messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
+                    } else {
+                        messages.innerHTML += '<div>Bot: Lütfen geçerli bir seçenek girin (!1, !2, !3)</div>';
+                    }
+                    
+                    input.value = '';
+                    messages.scrollTop = messages.scrollHeight;
+                }
+            }
+        }
+
+        // Sunucu bilgilerini yükle
+        function loadServers() {
+            fetch('servers.json')
+                .then(response => response.json())
+                .then(data => {
+                    const serverList = document.getElementById('serverList');
+                    serverList.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        serverList.innerHTML = '<div class="no-announcement">Aktif sunucu bulunmamaktadır.</div>';
+                        return;
+                    }
+                    
+                    data.forEach(server => {
+                        const serverElement = document.createElement('div');
+                        serverElement.className = 'server-box';
+                        serverElement.innerHTML = `
+                            <div class="server-name">${server.name}</div>
+                            <div>
+                                <span class="server-ip">${server.ip}:${server.port}</span>
+                                <span class="server-status ${server.status === 'online' ? 'online' : ''}">Durumu: ${server.status === 'online' ? 'Açık' : 'Kapalı'}</span>
+                            </div>
+                            ${server.description ? `<div style="margin-top: 10px;">${server.description}</div>` : ''}
+                        `;
+                        serverList.appendChild(serverElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Sunucu bilgileri yüklenirken hata oluştu:', error);
+                    document.getElementById('serverList').innerHTML = '<div class="no-announcement">Sunucu bilgileri yüklenirken hata oluştu.</div>';
+                });
+        }
+
+        // Duyuruları yükle
+        function loadAnnouncements() {
+            fetch('announcements.json')
+                .then(response => response.json())
+                .then(data => {
+                    const announcementList = document.getElementById('announcementList');
+                    announcementList.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        announcementList.innerHTML = '<div class="no-announcement">Henüz duyuru bulunmamaktadır.</div>';
+                        return;
+                    }
+                    
+                    data.forEach(announcement => {
+                        const announcementElement = document.createElement('div');
+                        announcementElement.className = 'announcement-box';
+                        announcementElement.innerHTML = `
+                            <div class="announcement-title">${announcement.title}</div>
+                            <div class="announcement-date">${new Date(announcement.date).toLocaleDateString('tr-TR')}</div>
+                            <div class="announcement-content">${announcement.content}</div>
+                        `;
+                        announcementList.appendChild(announcementElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Duyurular yüklenirken hata oluştu:', error);
+                    document.getElementById('announcementList').innerHTML = '<div class="no-announcement">Duyurular yüklenirken hata oluştu.</div>';
+                });
+        }
+    </script>
+</body>
+</html>
