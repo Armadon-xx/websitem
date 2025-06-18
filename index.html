@@ -63,7 +63,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             cursor: pointer;
             transition: transform 0.2s;
-            height: 60px;
+            height: auto;
             display: flex;
             align-items: center;
             position: relative;
@@ -81,6 +81,12 @@
             position: absolute;
             left: 15px;
             font-size: 20px;
+        }
+        .plugin-description {
+            margin-left: 30px;
+            margin-top: 10px;
+            color: #555;
+            display: none;
         }
         .content-section {
             display: none;
@@ -105,6 +111,7 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
         }
         .server-name {
             font-weight: bold;
@@ -243,21 +250,37 @@
                 <span>Pluginler</span>
             </div>
             
-            <div class="plugin-box" onclick="showPluginImage(1)">
+            <div class="plugin-box" onclick="showPluginInfo(1)">
                 <span class="plugin-emoji">🗺️</span>
                 <div class="plugin-title">Map Plugini</div>
+                <div class="plugin-description" id="pluginDesc1">
+                    Amacı: !map komutu ile kolay bir şekilde kimse oyundan düşmeden map değiştirmenizi sağlar.<br>
+                    Komutlar: sadece !map
+                </div>
             </div>
-            <div class="plugin-box" onclick="showPluginImage(2)">
+            <div class="plugin-box" onclick="showPluginInfo(2)">
                 <span class="plugin-emoji">🏆</span>
                 <div class="plugin-title">Topka</div>
+                <div class="plugin-description" id="pluginDesc2">
+                    Topka Plugini Amacı: Komutçu Adminlik yapan kişilerin süresini kayıt eder ve Komutçu olan kişiye yardım eder.<br>
+                    Komutları: !kakim !ka !ka0 !topka !topka0
+                </div>
             </div>
-            <div class="plugin-box" onclick="showPluginImage(3)">
+            <div class="plugin-box" onclick="showPluginInfo(3)">
                 <span class="plugin-emoji">📏</span>
                 <div class="plugin-title">Kaccm</div>
+                <div class="plugin-description" id="pluginDesc3">
+                    Kaccm Plugini Amacı: !kaccm yazınca rastgele chate "x adlı oyuncunun malafatı x cm miş" diyor.
+                </div>
             </div>
-            <div class="plugin-box" onclick="showPluginImage(4)">
+            <div class="plugin-box" onclick="showPluginInfo(4)">
                 <span class="plugin-emoji">⚠️</span>
                 <div class="plugin-title">Sikayet</div>
+                <div class="plugin-description" id="pluginDesc4">
+                    Sikayet Plugini: Discord kullanmayan ama bir oyuncudan şikayetçi olan kişiler için.<br>
+                    Komut: !sikayet şikayetmetni<br>
+                    Yetkililer bu şikayeti !sikayetpanel komutu ile şikayetleri listeler, hangisini seçmek isterse !1 !2 gibi komutlarla şikayeti seçer ve onaylar veya reddeder.
+                </div>
             </div>
             
             <div class="section-title">
@@ -275,8 +298,13 @@
                 <span>CS2 Sunucuları</span>
             </div>
             <div id="serverList">
-                <!-- Sunucu bilgileri buraya dinamik olarak yüklenecek -->
-                <div class="no-announcement">Sunucu bilgileri yükleniyor...</div>
+                <div class="server-box" onclick="connectToServer('185.193.165.39')">
+                    <div class="server-name">Nexus Klan</div>
+                    <div>
+                        <span class="server-ip">185.193.165.39</span>
+                        <span class="server-status online">Durumu: Açık</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -285,8 +313,13 @@
                 <span>Duyurular</span>
             </div>
             <div id="announcementList">
-                <!-- Duyurular buraya dinamik olarak yüklenecek -->
-                <div class="no-announcement">Duyurular yükleniyor...</div>
+                <div class="announcement-box">
+                    <div class="announcement-title">Kişiye Özel Pluginler</div>
+                    <div class="announcement-date">PROOYUNUN DESTEKLEDİĞİ!</div>
+                    <div class="announcement-content">
+                        Kişiye özel pluginler yapılır. İhtiyaçlarınıza uygun özelleştirilmiş pluginler için bizimle iletişime geçebilirsiniz.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -312,8 +345,7 @@
     <script>
         // Sayfa yüklendiğinde verileri çek
         document.addEventListener('DOMContentLoaded', function() {
-            loadServers();
-            loadAnnouncements();
+            // Sunucu ve duyurular zaten HTML içinde tanımlı
         });
 
         function showContent(sectionId) {
@@ -332,8 +364,20 @@
             event.target.classList.add('active');
         }
 
-        function showPluginImage(imageNumber) {
-            alert("Görsel " + imageNumber + " gösterilecek");
+        function showPluginInfo(pluginNumber) {
+            // Tüm açıklamaları gizle
+            document.querySelectorAll('.plugin-description').forEach(desc => {
+                desc.style.display = 'none';
+            });
+            
+            // Tıklananın açıklamasını göster/gizle
+            const desc = document.getElementById('pluginDesc' + pluginNumber);
+            desc.style.display = desc.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function connectToServer(ip) {
+            alert(ip + " adresli sunucuya bağlanılıyor...");
+            // Burada gerçek bağlantı kodları olacak
         }
 
         function toggleChat() {
@@ -364,7 +408,12 @@
                 if (input.value.trim() !== '') {
                     messages.innerHTML += `<div>Kullanıcı: ${input.value}</div>`;
                     
-                    if (input.value.startsWith('!1')) {
+                    // Özel yanıtlar
+                    if (input.value.toLowerCase().includes('sa') || input.value.toLowerCase().includes('selam')) {
+                        messages.innerHTML += '<div>Bot: Aleyküm Selam, size hangi konuda yardımcı olabilirim?</div>';
+                    } else if (input.value.toLowerCase().includes('para iadesi')) {
+                        messages.innerHTML += '<div>Bot: Para iadesi yapılmıyor ama bir sorununuz varsa sizle daha detaylı ilgilenecek kişilerin discord adları:<br>Sadistic666<br>ersin.q</div>';
+                    } else if (input.value.startsWith('!1')) {
                         messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
                     } else if (input.value.startsWith('!2')) {
                         messages.innerHTML += '<div>Bot: Şuan aktif değil</div>';
@@ -378,69 +427,6 @@
                     messages.scrollTop = messages.scrollHeight;
                 }
             }
-        }
-
-        // Sunucu bilgilerini yükle
-        function loadServers() {
-            fetch('servers.json')
-                .then(response => response.json())
-                .then(data => {
-                    const serverList = document.getElementById('serverList');
-                    serverList.innerHTML = '';
-                    
-                    if (data.length === 0) {
-                        serverList.innerHTML = '<div class="no-announcement">Aktif sunucu bulunmamaktadır.</div>';
-                        return;
-                    }
-                    
-                    data.forEach(server => {
-                        const serverElement = document.createElement('div');
-                        serverElement.className = 'server-box';
-                        serverElement.innerHTML = `
-                            <div class="server-name">${server.name}</div>
-                            <div>
-                                <span class="server-ip">${server.ip}:${server.port}</span>
-                                <span class="server-status ${server.status === 'online' ? 'online' : ''}">Durumu: ${server.status === 'online' ? 'Açık' : 'Kapalı'}</span>
-                            </div>
-                            ${server.description ? `<div style="margin-top: 10px;">${server.description}</div>` : ''}
-                        `;
-                        serverList.appendChild(serverElement);
-                    });
-                })
-                .catch(error => {
-                    console.error('Sunucu bilgileri yüklenirken hata oluştu:', error);
-                    document.getElementById('serverList').innerHTML = '<div class="no-announcement">Sunucu bilgileri yüklenirken hata oluştu.</div>';
-                });
-        }
-
-        // Duyuruları yükle
-        function loadAnnouncements() {
-            fetch('announcements.json')
-                .then(response => response.json())
-                .then(data => {
-                    const announcementList = document.getElementById('announcementList');
-                    announcementList.innerHTML = '';
-                    
-                    if (data.length === 0) {
-                        announcementList.innerHTML = '<div class="no-announcement">Henüz duyuru bulunmamaktadır.</div>';
-                        return;
-                    }
-                    
-                    data.forEach(announcement => {
-                        const announcementElement = document.createElement('div');
-                        announcementElement.className = 'announcement-box';
-                        announcementElement.innerHTML = `
-                            <div class="announcement-title">${announcement.title}</div>
-                            <div class="announcement-date">${new Date(announcement.date).toLocaleDateString('tr-TR')}</div>
-                            <div class="announcement-content">${announcement.content}</div>
-                        `;
-                        announcementList.appendChild(announcementElement);
-                    });
-                })
-                .catch(error => {
-                    console.error('Duyurular yüklenirken hata oluştu:', error);
-                    document.getElementById('announcementList').innerHTML = '<div class="no-announcement">Duyurular yüklenirken hata oluştu.</div>';
-                });
         }
     </script>
 </body>
